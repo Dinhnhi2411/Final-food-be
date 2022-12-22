@@ -6,7 +6,7 @@ const userController = {};
 
 // REGISTER USER
 
-userController.register = catchAsync(async (req, res, next) => {
+userController.registerUser = catchAsync(async (req, res, next) => {
   // Get data from request
   let { name, email, password } = req.body;
 
@@ -33,6 +33,8 @@ userController.register = catchAsync(async (req, res, next) => {
     "Create user successful"
   );
 });
+
+// REGISTER SELLER
 
 
 // GET ALL USERS
@@ -63,23 +65,14 @@ userController.getUsers = catchAsync(async (req, res, next) => {
     .skip(offset)
     .limit(limit);
     
-  const promises = users.map(async (user) => {
-    let temp = user.toJSON();
-    temp.friendship = await Friend.findOne({
-      $or: [
-        { from: currentUserId, to: user._id },
-        { from: user._id, to: currentUserId },
-      ],
-    });
-    return temp;
-  });
-  const usersWithFriendship = await Promise.all(promises);
+    
+  
 
   return sendResponse(
     res,
     200,
     true,
-    { users: usersWithFriendship, totalPage, count },
+    { users: users, totalPage, count },
     null,
     ""
   );
@@ -102,6 +95,53 @@ userController.getCurrentUser = catchAsync(async (req, res, next) => {
     null,
     "Get current user successful"
   );
+});
+
+// GET SINGLE USER BY ID
+
+userController.getSingleUser = catchAsync(async(req, res, next) => {
+  const userId = req.params.id;
+  let user = await User.findById(userId);
+  if (!user)
+        throw new AppError(400, "User not found", "Get Single User Error")
+
+    return sendResponse(res, 200, true, user, null, "Get Single User Successfully")
+
+});
+
+// UPDATE USER PROFILE BY ID
+
+userController.updateProfileUser = catchAsync(async(req, res, next) => {
+  const userId = req.params.id;
+  let user = await User.findById(userId);
+  if(!user) {
+     throw new AppError(400, "User not found", "Update User Error")
+  };
+
+  const allows = [
+        "name",
+        "avatarUrl",
+        "address",
+        "phone",
+        "city",
+        "country",
+  ];
+
+  allows.forEach((field) => {
+    if(req.body[field] !== undefined ) {
+      user[field] = req.body[field]
+    }
+  });
+
+  await user.save();
+  return sendResponse(
+    res,
+    200,
+    true,
+    user,
+    null,
+    "Update User Successfully"
+  )
 });
 
 

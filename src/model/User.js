@@ -21,7 +21,7 @@ const userSchema = Schema(
       required: true,
     },
 
-    avataUrl: 
+    avatarUrl: 
     {
       type: String,
       required: false,
@@ -67,13 +67,19 @@ const userSchema = Schema(
       required: false,
       default: "",
     },
+    comment:
+    {
+      type: String,
+      required: false,
+      default: "",
+    },
     customer:
      {
       type: Boolean,
       default: false,
       select: false,
     },
-    admin:
+    seller:
      {
       type: Boolean,
       default: false,
@@ -103,10 +109,10 @@ userSchema.methods.toJSON = function () {
 };
 
 userSchema.methods.generateToken = async function () {
-  const accessTonken = await jwt.sign({ _id: this._id }, JWT_SECRET_KEY, {
+  const accessToken = await jwt.sign({ _id: this._id }, JWT_SECRET_KEY, {
     expiresIn: "1d",
   });
-  return accessTonken;
+  return accessToken;
 };
 
 const User = mongoose.model("User", userSchema);
