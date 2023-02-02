@@ -1,0 +1,37 @@
+# Using the node image to build the React app
+image: node:14.18.1-alpine3.11
+variables:
+  PUBLIC_URL: /
+# Cache node modules - speeds up future builds
+cache:
+  paths:
+    - node_modules
+stages:
+  - deploy
+deploy_production:
+  stage: deploy
+  image: node:14.18.1-alpine3.11
+  before_script:
+    - "which ssh-agent || (apk add --update openssh-client rsync curl)"
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh/id_rsa
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+    #   - apt-get install rsync -y -qq
+    #   - apt-get install curl -y -qq
+    - mv $PRODUCTION_ENV ./.env
+  script:
+    - echo "Deploying to server"
+    - echo "$PRODUCTION_SERVER_USER@$PRODUCTION_SERVER_IP"
+    - ssh -i ~/.ssh/gitlab -o StrictHostKeyChecking=no $PRODUCTION_SERVER_USER@$PRODUCTION_SERVER_IP -p 22
+    - rsync -avz --progress -a -e "ssh -p 22" ./ $PRODUCTION_SERVER_USER@$PRODUCTION_SERVER_IP:/home/coderschool/nhi-backend
+    - ssh -i ~/.ssh/gitlab -o StrictHostKeyChecking=no $PRODUCTION_SERVER_USER@$PRODUCTION_SERVER_IP -p 22 "pm2 stop dinhngocliennhi1999_backend-8782 || true && pm2 delete dinhngocliennhi1999_backend-8782 || true && pm2 save"
+    - ssh -i ~/.ssh/gitlab -o StrictHostKeyChecking=no $PRODUCTION_SERVER_USER@$PRODUCTION_SERVER_IP -p 22 "cd /home/coderschool/nhi-backend && yarn install && sleep 30 && pm2 start npm --name 'dinhngocliennhi1999_backend-8782' -- start && pm2 save"
+    - echo "Deployed"
+  environment:
+    name: production
+  only:
+    - develop # Only run on master branch
