@@ -78,7 +78,7 @@ orderController.getOrders = catchAsync(async (req, res, next) => {
   if (filterKeys.length) {
     throw new AppError(400, "Not Accepted Query", "Bad Request");
   }
-  const count = await Order.countDocuments();
+  const count = await Order.countDocuments({userId});
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 5;
   const totalPages = Math.ceil(count / limit);
