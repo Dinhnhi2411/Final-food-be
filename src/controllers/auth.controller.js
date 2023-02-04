@@ -68,7 +68,7 @@ authController.loginUserWithFacebook = catchAsync(async (req, res, next) => {
     true,
     user,
     null,
-    "User is login successfully"
+    "User is login with facebook successfully"
   );
 });
 
@@ -76,14 +76,14 @@ authController.loginUserWithFacebook = catchAsync(async (req, res, next) => {
 
 authController.loginUserWithGoogle = catchAsync(async (req, res, next) => {
   const user = await loginWithSocial(req.user);
-
+  console.log(req.body)
   return sendResponse(
     res,
     200,
     true,
     user,
     null,
-    "User is login successfully"
+    "User is login with google successfully"
   );
 });
 

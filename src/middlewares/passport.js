@@ -59,7 +59,7 @@ passportMiddleware.logginRequired = function (req, res, next) {
       try {
         if (err || info) {
           throw new AppError(
-            httpStatus.UNAUTHORIZED,
+            200,
             "Invalid access token",
             "Get access token"
           );
