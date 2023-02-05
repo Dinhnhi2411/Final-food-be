@@ -12,7 +12,7 @@ const userSchema = Schema(
     email: 
     {
       type: String,
-      required: false,
+      required: true,
       unique: true,
     },
     password: 
@@ -22,17 +22,6 @@ const userSchema = Schema(
     },
 
     avatarUrl: 
-    {
-      type: String,
-      required: false,
-      default: "",
-    },
-    storeName: 
-    { type: String,
-         required: false,
-          default: "" 
-        },
-    logoUrl: 
     {
       type: String,
       required: false,

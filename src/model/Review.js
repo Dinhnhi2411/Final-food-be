@@ -22,7 +22,7 @@ const reviewSchema = Schema(
       type: Number,
       default: 0,
     },
-    rate: {
+    rating: {
       type: Number,
       default: 0,
     },

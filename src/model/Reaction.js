@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 
 const reactionSchema = Schema(
   {
-    rate: {
+    rating: {
         type: Number,
         min: 1,
         max: 5 
@@ -49,7 +49,7 @@ reactionSchema.statics.calTotalRating = async function (targetId) {
       $group: {
         _id: "$targetId",
         totalRatings: { $sum: 1 },
-        rateAverage: { $avg: "$rate" },
+        rateAverage: { $avg: "$rating" },
       },
     },
     {
