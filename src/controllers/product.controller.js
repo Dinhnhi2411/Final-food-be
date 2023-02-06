@@ -33,7 +33,7 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
     priceSale,
     unit,
     image,
-    rating,
+   rating,
     status,
     author: currentSellerId,
   });
@@ -67,7 +67,7 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
     req.query.status = "Normal";
   }
   if (req.query.rating) {
-    req.query.rateAverage = {
+    req.query.ratingAverage = {
       $gte: parseInt(req.query.rating),
       $lte: 5,
     };

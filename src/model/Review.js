@@ -14,10 +14,6 @@ const reviewSchema = Schema(
       type: Boolean,
       default: false,
     },
-    totalRatings: {
-      type: Number,
-      default: 0,
-    },
     rateAverage: {
       type: Number,
       default: 0,

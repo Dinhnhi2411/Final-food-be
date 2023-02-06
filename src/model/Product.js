@@ -24,10 +24,7 @@ const productSchema = Schema(
             type: Number,
             required: false,
         },
-        discount: {
-            type: Number,
-             default: 0 
-            },
+        
         unit: {
             type: String,
             required: true,
@@ -40,12 +37,7 @@ const productSchema = Schema(
             type: Number,
             required: false,
         },
-        // feedback: {
-        //     type: Schema.Types.ObjectId,
-        //     required: true,
-        //     ref: "Review", 
-
-        // },
+        rateAverage: 0,
         status: {
             type: String,
             enum: ["Normal", "Discount", "New", "Top"],
@@ -67,17 +59,7 @@ const productSchema = Schema(
     { timestamps: true } //CreatedAt & UpdatedAt
 );
 
-productSchema.pre("save", function (next) {
-    let product = this;
 
-    if (product.isModified("discount") || product.isModified("price")){
-        product.priceSale = parseFloat(
-            (product.price - (product.discount * product.price) / 100).toFixed(1)
-        );
-    }
-        next();
-
-});
 
 
 const Product = mongoose.model("Product", productSchema);

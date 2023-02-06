@@ -1,35 +1,32 @@
-
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
-
 
 const reactionSchema = Schema(
   {
     rating: {
-        type: Number,
-        min: 1,
-        max: 5 
-        },
+      type: Number,
+      min: 1,
+      max: 5,
+    },
     refPaths: {
       type: String,
-      enum: ["Review", "Product"],
+      // enum: ["Review", "Product"],
       require: true,
     },
     userId: {
-        type: Schema.Types.ObjectId,
-        refPath: "User",
-        required: true 
-        },
+      type: Schema.Types.ObjectId,
+      refPath: "User",
+      required: true,
+    },
     targetId: {
       type: Schema.Types.ObjectId,
       refPath: "refPaths",
       required: true,
     },
     isDeleted: {
-        type: Boolean,
-        default: false 
-        },
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

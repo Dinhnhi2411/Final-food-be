@@ -80,22 +80,32 @@ reviewController.getReviewByProductId = catchAsync(async (req, res, next) => {
     throw new AppError(400, "Product is not found", "Get single review error");
   }
   // let review = await Review.find(query);
-let review = await Review.find({ isDeleted: false, productId })
- .populate("userId");
 
+
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 5;
+  const offset = limit * (page - 1);
+
+  let review = await Review.find({ isDeleted: false, productId })
+ .populate("userId")
+ .sort({ createdAt: -1 })
+ .limit(limit)
+ .skip(offset);
+ 
+ 
+   
   if (!review) {
     throw new AppError(400, "Review is not found", "Get single review error");
   }
+  const count = await Review.countDocuments({productId});
 
-  page = parseInt(page) || 1;
-  limit = parseInt(limit) || 3;
-  const count = review.length;
+  
   const totalPages = Math.ceil(count / limit);
   return sendResponse(
     res,
     200,
     true,
-    { review, totalPages, count },
+    { review, totalPages, count, page },
     null,
     "Get Review successfully"
   );
@@ -203,7 +213,7 @@ reviewController.getAllReviews = catchAsync(async (req, res, next) => {
     .populate("userId");
 
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 10;
+  limit = parseInt(limit) || 3;
   const count = review.length;
   const totalPages = Math.ceil(count / limit);
 
@@ -216,19 +226,5 @@ reviewController.getAllReviews = catchAsync(async (req, res, next) => {
     "Get All Review Successfully"
   );
 });
-
-// reviewController.getAllReviews = catchAsync(async (req, res, next) => {
-//   const { query } = req;
-//   let reviews = await Review.find(query);
-
-//   return sendResponse(
-//     res,
-//     200,
-//     true,
-//     reviews,
-//     null,
-//     "Get Reviews successfully"
-//   );
-// });
 
 module.exports = reviewController;
