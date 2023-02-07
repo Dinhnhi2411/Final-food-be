@@ -18,7 +18,7 @@ router.post("/me",
 /**
  * @route GET /carts/me
  * @description Get cart 
- * @access public
+ * @access Login required
  */
 router.get("/me",
     authentication.loginRequired,

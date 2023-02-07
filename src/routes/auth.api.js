@@ -26,7 +26,7 @@ router.post(
 /**
 @route POST /auth/facbook
 @description Log in with facebook
-@body {email, password}
+@body {accessToken}
 @access public
 */
 router.post("/facebook",
@@ -36,7 +36,7 @@ authController.loginUserWithFacebook);
 /**
 @route POST /auth/google
 @description Log in with google
-@body {email, password}
+@body {accessToken}
 @access public
 */
 router.post("/google",

@@ -10,7 +10,7 @@ const router = express.Router();
 /**
  * @route POST /oders/me
  * @description Create a new oders
- * @body{ name, addressShip, phone, products, priceShip, total }
+ * @body { name, addressShip, phone, products, priceShip, total }
  * @access Login required
  */
 
@@ -84,7 +84,7 @@ router.get(
 
 /**
  * @route GET /oders/me/:id
- * @description Get a Oders by id
+ * @description Get a oder by id
  * @access Login required
  */
 
@@ -123,7 +123,7 @@ router.post(
 /**
  * @route PUT /oders/:id
  * @description Update a oders
- * @body { name, addressShip, phone, products, priceShip, total }
+ * @body {status} 
  * @access  Login required
  */
 
@@ -138,7 +138,7 @@ router.put(
 
 
 /**
- * @route DELETE /oders/me/:id
+ * @route DELETE /oders/:id
  * @description Delete a oder
  * @access Login required
  */
