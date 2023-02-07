@@ -22,7 +22,7 @@ const createUser = async function (userBody) {
   if (isExits) {
     throw new AppError(
       404,
-      "Email is Exist, Please login or reset password",
+      "Email is Exist, Please login",
       "Create new User"
     );
   }
@@ -36,7 +36,7 @@ const createUser = async function (userBody) {
 
 const loginWithSocial = async function (socialUser) {
    const { id, displayName, emails, photos, provider } = socialUser;
-
+  console.log(socialUser)
    filter = { email: emails[0].value };
    socialCriteria = { facebook: "facebookId", google: "googleId" };
    socialId = socialCriteria[provider];
@@ -46,7 +46,7 @@ const loginWithSocial = async function (socialUser) {
     const newUser = {
       name: displayName,
       [socialId]: id,
-      email: emails[0].value,
+      email:emails[0].value || id,
       isEmailVerified: true,
       password: generateRandomHexString(8),
       avatarUrl: photos[0].value,
@@ -71,7 +71,8 @@ authController.loginUserWithFacebook = catchAsync(async (req, res, next) => {
   // 2.2.1 Tìm xem trong database có profile user chưa ?
   // 2.2.1.1 Chưa có tạo mới
   // 2.2.2 Trả về client thông tin user (login user sucess)
-  
+
+
   return sendResponse(
     res,
     200,
