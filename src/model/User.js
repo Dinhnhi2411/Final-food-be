@@ -4,6 +4,11 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const userSchema = Schema(
   {
+    id: {
+      type: String,
+      required:false,
+      unique: true,
+    },
     name: 
     {
       type: String,
@@ -12,7 +17,7 @@ const userSchema = Schema(
     email: 
     {
       type: String,
-      required:true,
+      required:false,
       unique: true,
     },
     password: 

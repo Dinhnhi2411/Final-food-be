@@ -36,24 +36,33 @@ const createUser = async function (userBody) {
 
 const loginWithSocial = async function (socialUser) {
    const { id, displayName, emails, photos, provider } = socialUser;
-  console.log(socialUser)
+
+    if ( provider === "facebook") {
+    
+   filter = {id: id}
+
+    }
+  if ( provider === "google") {
+
    filter = { email: emails[0].value };
+  }
+   
    socialCriteria = { facebook: "facebookId", google: "googleId" };
    socialId = socialCriteria[provider];
+
    let user = await getUserByFilter(filter);
-  
-   if (!user) {
-    const newUser = {
+   if(!user){
+   const newUser = {
       name: displayName,
       [socialId]: id,
-      email:emails[0].value || id,
+      email:emails[0].value ,
+      id:id,
       isEmailVerified: true,
       password: generateRandomHexString(8),
       avatarUrl: photos[0].value,
     };
-    user = await createUser(newUser);
-    }
-    
+     user = await createUser(newUser);
+   }
   const token = await user.generateToken();
 
   return { user, accessToken: token };
