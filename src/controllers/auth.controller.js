@@ -72,16 +72,6 @@ const loginWithSocial = async function (socialUser) {
 
 authController.loginUserWithFacebook = catchAsync(async (req, res, next) => {
   const user = await loginWithSocial(req.user);
-
-  // 1. Lấy access_token từ client gửi lên 
-  // 2. Gọi API facebook lấy profile user dựa trên access_token
-  // 2.1 Lỗi access_token login thất bại
-  // 2.2 Facebook Profile user
-  // 2.2.1 Tìm xem trong database có profile user chưa ?
-  // 2.2.1.1 Chưa có tạo mới
-  // 2.2.2 Trả về client thông tin user (login user sucess)
-
-
   return sendResponse(
     res,
     200,
