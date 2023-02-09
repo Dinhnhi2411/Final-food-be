@@ -67,7 +67,7 @@ router.get(
 
 router.get(
   "/",
-  authentication.loginRequired,
+  // authentication.loginRequired,
   productController.getAllProducts
 );
 /**
