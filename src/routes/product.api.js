@@ -79,7 +79,7 @@ router.get(
 
 router.get(
   "/:id",
-  authentication.loginRequired,
+  // authentication.loginRequired,
   validators.validate([
        param("id").exists().isString().custom(validators.checkObjectId),
  
