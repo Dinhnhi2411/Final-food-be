@@ -17,7 +17,6 @@ const config = {
   },
   jwt: {
     secret: env.JWT_SECRET_KEY,
-//     accessExpiration: env.ACCESS_EXPIRATION,
   }
 };
 

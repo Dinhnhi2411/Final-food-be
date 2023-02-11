@@ -13,13 +13,11 @@ const getDashBoard = async function (queryDash) {
     .reverse();
 
   const startDays = rangeDays[0];
-  // const endDays = new Date(
-  //   rangeDays[rangeDays.length - 1].setUTCHour(23, 59, 59, 999)
-  // );
-
   const day = new Date();
   let month = day.getMonth();
   let year = day.getFullYear();
+
+// create info
 
   const info = {
     revenue: 0,
@@ -29,12 +27,13 @@ const getDashBoard = async function (queryDash) {
     lastestOrders: [],
   };
  
+// get order by date
+
   const getOrdersByDate = [
     {
       $match: {
         createdAt: {
           $gte: startDays,
-          // $lte: endDays,
         },
         
       },
@@ -58,6 +57,8 @@ const getDashBoard = async function (queryDash) {
       },
     },
   ];
+
+  // get count by month
 
   const countByMonth = [
  
@@ -88,6 +89,8 @@ const getDashBoard = async function (queryDash) {
       },
     },
   ];
+
+// get sum by month
 
   const sumByMonth = [
     {
@@ -121,6 +124,8 @@ const getDashBoard = async function (queryDash) {
     },
   ];
 
+  // tổng kết
+
   const totalCustomer = await User.aggregate(countByMonth);
   const totalProduct = await Product.aggregate(countByMonth);
   const totalOrder = await Order.aggregate(countByMonth);
@@ -135,6 +140,8 @@ const getDashBoard = async function (queryDash) {
 
   return info;
 };
+
+// GET ALL DASHBOARD
 
 dashboardController.getAllDashBoard = catchAsync(async (req, res, next) => {
   const info = await getDashBoard(req.query);

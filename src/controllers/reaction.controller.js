@@ -5,13 +5,14 @@ const Review = require("../model/Review");
 
 const reactionController = {};
 
+// funct get reaction  return reactions
 const getAllReactionPro = async function (query) {
   const reactions = await Reaction.paginate(query);
 
   return reactions;
 };
 
-// CREATE REACTIOB
+// funct create reaction return totalRatings
 
 const createReactionPro = async function (userId, reactionBody) {
   const { targetId, rating, refPaths } = reactionBody;
@@ -29,28 +30,28 @@ const createReactionPro = async function (userId, reactionBody) {
   } else {
     reaction.rating = rating;
     await reaction.save();
-
     message = "Updated reaction";
   }
 
 const totalRatings = await Reaction.calTotalRating(targetId);
-// if (refPaths === "Product") {
-//     await Product.findOneAndUpdate({ _id: targetId }, { ...totalRatings });
-//   }
 
-  // if (refPaths === "Review") {
-    await Review.findOneAndUpdate({ _id: targetId }, { ...totalRatings });
-  // }
+// find and update
+
+await Review.findOneAndUpdate({ _id: targetId }, { ...totalRatings });
+
 
   return totalRatings;
 };
 
 
+// CREATE REACTION
+
 reactionController.createReaction = catchAsync(async (req, res, next) => {
   const userId = req.userId;
-  
-
   const reaction = await createReactionPro(userId, req.body);
+  
+  // response
+
   return sendResponse(
     res,
     200,
@@ -61,12 +62,14 @@ reactionController.createReaction = catchAsync(async (req, res, next) => {
   );
 });
 
-
+// GET ALL REACTIONS
 
 reactionController.getAllReaction = catchAsync(async(req, res, next)=> {
+const reaction = await Reaction.find(req.query);
 
-    const reaction = await Reaction.find(req.query);
-    return sendResponse(
+// response
+
+return sendResponse(
     res,
     200,
     true,

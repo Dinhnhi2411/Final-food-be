@@ -21,6 +21,8 @@ cartController.createCart = catchAsync(async (req, res, next) => {
     cart = await Cart.create({ amount: 1, productId, author: currentUserId });
   }
 
+  // response 
+
   sendResponse(res, 200, true, cart, null, "Create Cart Successfully");
 });
 
@@ -57,6 +59,9 @@ cartController.getCart = catchAsync(async (req, res, next) => {
       totalItem += item.amount;
     });
   }
+
+  // response
+
   return sendResponse(
     res,
     200,
@@ -74,13 +79,19 @@ cartController.updateSingleCart = catchAsync(async (req, res, next) => {
   const cartId = req.params.id;
 
   let cart = await Cart.findById(cartId);
+
+  // check exist cart
+
   if (!cart) {
     throw new AppError(400, "Cart not exists", "Bad Request");
   }
 
+  // check author 
+
   if (!cart.author.equals(currentUserId)) {
     throw new AppError(400, "Only author can update cart", "Update Cart Error");
   }
+  
   const allows = ["amount"];
   allows.forEach((field) => {
     if (req.body[field] !== undefined) {
@@ -88,6 +99,8 @@ cartController.updateSingleCart = catchAsync(async (req, res, next) => {
     }
   });
   await cart.save();
+
+  // response
 
   return sendResponse(
     res,
@@ -109,12 +122,17 @@ cartController.deleteCart = catchAsync(async (req, res, next) => {
     { _id: cartId, userId: currentUserId },
     { new: true }
   );
+
+  //check exist cart
+
   if (!cart)
     throw new AppError(
       400,
-      "Post not found or Cart not authorrized",
+      "Cart not found or Cart not authorrized",
       "Deleta Cart Error"
     );
+
+   // reponse
 
   return sendResponse(
     res,

@@ -57,16 +57,6 @@ router.get(
    
 );
 
-/**
- * @route PUT /oders/me/:id
- * @description Update a oders
- * @body { name, addressShip, phone, products, priceShip, total }
- * @access  Login required
- */
-
-
-
-
 
 //  SELLER
 

@@ -8,17 +8,23 @@ const userController = {};
 
 userController.registerUser = catchAsync(async (req, res, next) => {
   // Get data from request
+
   let { name, email, password, role } = req.body;
 
   // Bussiness logic Validation
+
   let user = await User.findOne({ email });
   if (user) {
     throw new AppError(400, "User already exists", "Registration error");
   }
+
   // Process
   // mã hóa password
+
   const salt = await bcrypt.genSalt(10);
   password = await bcrypt.hash(password, salt);
+  // create user
+
   user = await User.create({ name, email, password, role });
   const accessToken = await user.generateToken();
 
@@ -33,9 +39,6 @@ userController.registerUser = catchAsync(async (req, res, next) => {
     "Create user successful"
   );
 });
-
-// REGISTER SELLER
-
 
 // GET ALL USERS
 
@@ -56,17 +59,20 @@ userController.getUsers = catchAsync(async (req, res, next) => {
     ? { $and: filterConditions }
     : {};
 
+// count & page & totalPages
+
   const count = await User.countDocuments(filterCriteria);
   const totalPage = Math.ceil(count / limit);
   const offset = limit * (page - 1);
+
+//  find user theo filter
 
   let users = await User.find(filterCriteria)
     .sort({ createdAt: -1 })
     .skip(offset)
     .limit(limit);
-    
-    
-  
+
+// response
 
   return sendResponse(
     res,
@@ -84,8 +90,13 @@ userController.getCurrentUser = catchAsync(async (req, res, next) => {
   const currentUserId = req.userId;
 
   const user = await User.findById(currentUserId);
+  
+// check exist user
+
   if (!user)
     throw new AppError("400", "User not found", "Get current user error");
+
+// response
 
   return sendResponse(
     res,
@@ -102,8 +113,16 @@ userController.getCurrentUser = catchAsync(async (req, res, next) => {
 userController.getSingleUser = catchAsync(async(req, res, next) => {
   const userId = req.params.id;
   let user = await User.findById(userId);
+
+// check exist user
+
   if (!user)
-        throw new AppError(400, "User not found", "Get Single User Error")
+        throw new AppError(
+          400,
+          "User not found",
+          "Get Single User Error"
+          );
+// response
 
     return sendResponse(res, 200, true, user, null, "Get Single User Successfully")
 
@@ -114,9 +133,14 @@ userController.getSingleUser = catchAsync(async(req, res, next) => {
 userController.updateProfileUser = catchAsync(async(req, res, next) => {
   const userId = req.params.id;
   let user = await User.findById(userId);
+
+// check exist user
+
   if(!user) {
      throw new AppError(400, "User not found", "Update User Error")
   };
+
+// allows update
 
   const allows = [
         "name",
@@ -136,6 +160,9 @@ userController.updateProfileUser = catchAsync(async(req, res, next) => {
   });
 
   await user.save();
+
+  // response
+
   return sendResponse(
     res,
     200,
@@ -152,6 +179,9 @@ userController.updateUserById = catchAsync(async (req, res) => {
   
   const userId = req.params.id;
   let user = await User.findById(userId);
+
+// check exist user
+
   if (!user) {
     throw new AppError(404, "User Not Found", "Update current User Error");
   }
@@ -162,6 +192,8 @@ userController.updateUserById = catchAsync(async (req, res) => {
   });
 
   await user.save();
+
+  // response
 
   return sendResponse(
     res,
@@ -178,6 +210,9 @@ userController.updateUserById = catchAsync(async (req, res) => {
 userController.deleteUserById = catchAsync(async(req, res, next)=> {
   const userId = req.params.id;
   const user = await User.findByIdAndUpdate(userId, { isDeleted: true });
+  
+// check exist user
+
   if (!user) {
     throw new AppError(
       400,
@@ -185,6 +220,8 @@ userController.deleteUserById = catchAsync(async(req, res, next)=> {
       "Delete single user error"
     );
   }
+
+// response
 
   return (sendResponse(
     res,

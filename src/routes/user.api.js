@@ -5,9 +5,6 @@ const authentication = require("../middlewares/authentication");
 const validators = require("../middlewares/validators");
 const router = express.Router();
 
-
-
-
 // CUSTOMER
 /**
 @route POST /users/customer

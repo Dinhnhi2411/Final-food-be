@@ -1,13 +1,21 @@
-const { AppError, catchAsync, sendResponse, generateRandomHexString } = require("../helpers/utils");
+const {
+  AppError,
+  catchAsync,
+  sendResponse,
+  generateRandomHexString,
+} = require("../helpers/utils");
 const User = require("../model/User");
 const bcrypt = require("bcryptjs");
 const authController = {};
 
+// get user by filter
+
 const getUserByFilter = async function (filter, options) {
   const user = await User.findOne(filter, options);
-
   return user;
 };
+
+// check email
 
 const checkEmailTaken = async function (filter) {
   const user = await User.findOne(filter);
@@ -15,16 +23,14 @@ const checkEmailTaken = async function (filter) {
   return !!user;
 };
 
+// create user
+
 const createUser = async function (userBody) {
   const { email } = userBody;
 
   const isExits = await checkEmailTaken({ email });
   if (isExits) {
-    throw new AppError(
-      404,
-      "Email is Exist, Please login",
-      "Create new User"
-    );
+    throw new AppError(404, "Email is Exist, Please login", "Create new User");
   }
 
   const user = await new User({ ...userBody }).save();
@@ -34,35 +40,39 @@ const createUser = async function (userBody) {
   return user;
 };
 
+//  login with social
+
 const loginWithSocial = async function (socialUser) {
-   const { id, displayName, emails, photos, provider } = socialUser;
+  const { id, displayName, emails, photos, provider } = socialUser;
 
-    if ( provider === "facebook") {
-    
-   filter = {id: id}
+  // filter follow provider
 
-    }
-  if ( provider === "google") {
-
-   filter = { email: emails[0].value };
+  if (provider === "facebook") {
+    filter = { id: id };
   }
-   
-   socialCriteria = { facebook: "facebookId", google: "googleId" };
-   socialId = socialCriteria[provider];
+  if (provider === "google") {
+    filter = { email: emails[0].value };
+  }
 
-   let user = await getUserByFilter(filter);
-   if(!user){
-   const newUser = {
+  socialCriteria = { facebook: "facebookId", google: "googleId" };
+  socialId = socialCriteria[provider];
+
+  let user = await getUserByFilter(filter);
+
+  // if not user , we are create user
+  
+  if (!user) {
+    const newUser = {
       name: displayName,
       [socialId]: id,
-      email:emails[0].value ,
-      id:id,
+      email: emails[0].value,
+      id: id,
       isEmailVerified: true,
       password: generateRandomHexString(8),
       avatarUrl: photos[0].value,
     };
-     user = await createUser(newUser);
-   }
+    user = await createUser(newUser);
+  }
   const token = await user.generateToken();
 
   return { user, accessToken: token };
@@ -86,7 +96,7 @@ authController.loginUserWithFacebook = catchAsync(async (req, res, next) => {
 
 authController.loginUserWithGoogle = catchAsync(async (req, res, next) => {
   const user = await loginWithSocial(req.user);
-  
+
   return sendResponse(
     res,
     200,

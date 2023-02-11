@@ -23,6 +23,8 @@ const jwtVerify = async (payload, done) => {
 
 const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify);
 
+// login with facebook
+
 const facebookLogin = new facebookStrategy(
   config.passport.facebook,
   async (accessToken, refreshToken, profile, done) => {
@@ -33,6 +35,8 @@ const facebookLogin = new facebookStrategy(
     }
   }
 );
+
+// login with google
 
 const googleLogin = new googleStrategy(
   config.passport.google,
@@ -48,6 +52,8 @@ const googleLogin = new googleStrategy(
 passport.use("jwt", jwtStrategy);
 passport.use(facebookLogin);
 passport.use(googleLogin);
+
+// login required
 
 passportMiddleware.logginRequired = function (req, res, next) {
   passport.authenticate(

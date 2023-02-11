@@ -1,4 +1,3 @@
-const { query } = require("express");
 const { sendResponse, AppError, catchAsync } = require("../helpers/utils");
 const Product = require("../model/Product");
 const Review = require("../model/Review");
@@ -10,6 +9,7 @@ const productController = {};
 
 productController.createNewProduct = catchAsync(async (req, res, next) => {
   const currentSellerId = req.userId;
+
   let {
     productName,
     description,
@@ -22,9 +22,15 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
     status,
   } = req.body;
   let product = await Product.findOne({ productName });
+  
+  // check exist product
+
   if (product) {
     throw new AppError(400, "Product Already Exists", "Error Create Product");
   }
+
+  // create product
+
   product = await Product.create({
     productName,
     description,
@@ -40,6 +46,8 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 
   product = await product.populate("author");
 
+  // response 
+
   sendResponse(res, 200, true, product, null, "Create Product Successfully");
 });
 
@@ -48,12 +56,16 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 productController.getAllProducts = catchAsync(async (req, res, next) => {
   let { limit, page, sortBy, populate, select, ...filter } = req.query;
 
+  // setup search by name 
+
   if (req.query.productName) {
     req.query.productName = { $regex: req.query.productName, $options: "i" };
   } else {
     delete req.query.productName;
   }
+
   // let sortBy = req.query.sortBy && req.query.sortBy.toLowerCase();
+
   if (req.query.sortBy === "New") {
     req.query.status = "New";
   }
@@ -73,17 +85,21 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
     };
   }
 
+  // count & page & totalPages
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 10;
   const offset = limit * (page - 1);
   const count = await Product.countDocuments(req.query);
   const totalPages = Math.ceil(count / limit);
 
+  // find 
+
   const products = await Product.find(req.query)
     .sort({ createdAt: -1 })
     .limit(limit)
     .skip(offset);
 
+  // response
   return sendResponse(
     res,
     200,
@@ -99,6 +115,8 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
 productController.getProductTopSelling = catchAsync(async (req, res, next) => {
   let { page, limit, name, ...filterQuery } = req.query;
 
+  // filterkeys
+
   const filterKeys = Object.keys(filterQuery);
   if (filterKeys.length)
     throw new AppError(400, "Not Accepted Query", "Bad Request");
@@ -113,17 +131,23 @@ productController.getProductTopSelling = catchAsync(async (req, res, next) => {
     ? { $and: filterConditions }
     : {};
 
+  // count product & page & totalPages
+
   const count = await Product.countDocuments(filterCritera);
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 10;
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
+  // find product
+
   let Products = await Product.find(filterCritera)
     .sort({ createdAt: -1 })
     .populate("author")
     .limit(limit)
     .skip(offset);
+
+  // response
 
   return sendResponse(
     res,
@@ -140,6 +164,8 @@ productController.getProductTopSelling = catchAsync(async (req, res, next) => {
 productController.getProductNew = catchAsync(async (req, res, next) => {
   let { page, limit, name, ...filterQuery } = req.query;
 
+  // filterkeys
+
   const filterKeys = Object.keys(filterQuery);
   if (filterKeys.length)
     throw new AppError(400, "Not Accepted Query", "Bad Request");
@@ -154,17 +180,23 @@ productController.getProductNew = catchAsync(async (req, res, next) => {
     ? { $and: filterConditions }
     : {};
 
+  // count product & page & totalPages
+
   const count = await Product.countDocuments(filterCritera);
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 10;
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
+  // find product
+
   let Products = await Product.find(filterCritera)
     .sort({ createdAt: -1 })
     .populate("author")
     .limit(limit)
     .skip(offset);
+
+  // response
 
   return sendResponse(
     res,
@@ -181,6 +213,8 @@ productController.getProductNew = catchAsync(async (req, res, next) => {
 productController.getProductDiscount = catchAsync(async (req, res, next) => {
   let { page, limit, name, ...filterQuery } = req.query;
 
+  // filterkeys
+
   const filterKeys = Object.keys(filterQuery);
   if (filterKeys.length)
     throw new AppError(400, "Not Accepted Query", "Bad Request");
@@ -195,17 +229,23 @@ productController.getProductDiscount = catchAsync(async (req, res, next) => {
     ? { $and: filterConditions }
     : {};
 
+  // count product & page & totalPages
+
   const count = await Product.countDocuments(filterCritera);
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 10;
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
+// find product
+
   let Products = await Product.find(filterCritera)
     .sort({ createdAt: -1 })
     .populate("author")
     .limit(limit)
     .skip(offset);
+
+  // response 
 
   return sendResponse(
     res,
@@ -222,12 +262,21 @@ productController.getProductDiscount = catchAsync(async (req, res, next) => {
 productController.getSingleProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
 
+  // find product by id
+
   let product = await Product.findById(productId).populate("author");
   if (!product) {
     throw new AppError(400, "Product Not Found", "Get Single Product Error");
   }
+
   product = product.toJSON();
+
+  // find review 
+
   product.review = await Review.find({ product: product._id });
+
+  // reponse
+
   return sendResponse(
     res,
     200,
@@ -245,9 +294,15 @@ productController.updateSingleProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
 
   let product = await Product.findById(productId);
+  
+  // check exist product
+
   if (!product) {
     throw new AppError(400, "Product Not Found", "Update Product Error");
   }
+
+  // check author
+
   if (!product.author.equals(currentSellertId)) {
     throw new AppError(
       400,
@@ -255,6 +310,8 @@ productController.updateSingleProduct = catchAsync(async (req, res, next) => {
       "Update Product Error"
     );
   }
+
+  // allows update
 
   const allows = [
     "productName",
@@ -274,6 +331,8 @@ productController.updateSingleProduct = catchAsync(async (req, res, next) => {
   });
   await product.save();
 
+  // response
+
   return sendResponse(
     res,
     200,
@@ -288,14 +347,20 @@ productController.updateSingleProduct = catchAsync(async (req, res, next) => {
 
 productController.deleteSingleProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
+
   let product = await Product.findOneAndUpdate(
     { _id: productId },
     { isDeleted: true }
   );
+
+  // check exist product
+
   if (!product) {
     throw new AppError(400, " Product Not Found", " Delete Product Error");
   }
 
+  // response
+  
   return sendResponse(
     res,
     200,

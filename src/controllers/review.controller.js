@@ -5,14 +5,13 @@ const Review = require("../model/Review");
 
 const reviewController = {};
 
+// funct create review and return review
+
 const createReviewPro = async function (userId, productId, reviewBody) {
   let filter = { userId, productId, isDeleted: false };
 
   let review = await Review.findOne(filter);
 
-  // if (review) {
-  //   throw new AppError(404, "Review is Exist", "Create review error");
-  // }
 
   let newReview = {};
   Object.keys(reviewBody).forEach((field) => {
@@ -20,40 +19,16 @@ const createReviewPro = async function (userId, productId, reviewBody) {
       newReview[field] = reviewBody[field];
     }
   });
+
+  // create review
+
   review = await Review.create({ userId, productId, ...newReview });
 
   return review;
 };
 
-const updateRevewPro = async function (userId, reviewId, reviewBody) {
-  let filter = { _id: reviewId, isDeleted: false };
 
-  let review = await Review.findOne(filter);
-
-  if (!review) {
-    throw new AppError(404, "Review Not Found", "Update review error");
-  }
-
-  if (!review.userId.equals(userId)) {
-    throw new AppError(
-      401,
-      "Unauthorized edit other's review",
-      "Update Review Products error"
-    );
-  }
-
-  Object.keys(reviewBody).forEach((field) => {
-    if (reviewBody[field] !== undefined) {
-      review[field] = reviewBody[field];
-    }
-  });
-
-  await review.save();
-
-  return review;
-};
-
-//
+// calculate review
 
 const calculateReviewCount = async (productId) => {
   const reviewCount = await Review.countDocuments({
@@ -73,18 +48,20 @@ reviewController.getReviewByProductId = catchAsync(async (req, res, next) => {
   if (filterKeys.length) {
     throw new AppError(400, "Not Accepted Query", "Bad Request");
   }
-  
-  // let query = { productId, isDelete: false, populate: "userId"};
+    
   let product = Product.find(productId);
+
+  // check exist product
+
   if (!product) {
     throw new AppError(400, "Product is not found", "Get single review error");
   }
-  // let review = await Review.find(query);
-
 
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 5;
   const offset = limit * (page - 1);
+
+  // find review
 
   let review = await Review.find({ isDeleted: false, productId })
  .populate("userId")
@@ -92,15 +69,17 @@ reviewController.getReviewByProductId = catchAsync(async (req, res, next) => {
  .limit(limit)
  .skip(offset);
  
- 
-   
+ // check exist review
+
   if (!review) {
     throw new AppError(400, "Review is not found", "Get single review error");
   }
   const count = await Review.countDocuments({productId});
 
-  
   const totalPages = Math.ceil(count / limit);
+
+  // response
+
   return sendResponse(
     res,
     200,
@@ -117,10 +96,19 @@ reviewController.createReview = catchAsync(async (req, res, next) => {
   const { id: userId } = req.userId;
   const { id: productId } = req.params;
   const product = await Product.findById(productId);
+ 
+  // check exist review
+
   if (!product) {
     throw new AppError(400, "Product not exist", "Bad request");
   }
+
+  // create review
+
   const review = await createReviewPro(userId, productId, req.body);
+  
+  // response
+
   return sendResponse(
     res,
     200,
@@ -131,27 +119,14 @@ reviewController.createReview = catchAsync(async (req, res, next) => {
   );
 });
 
-reviewController.updateReviewById = catchAsync(async (req, res, next) => {
-  const { id: userId, role } = req.user;
-  const { id: reviewId } = req.params;
-
-  const review = await updateRevewPro(userId, reviewId, req.body);
-  return sendResponse(
-    res,
-    200,
-    true,
-    review,
-    null,
-    "Update review successfully"
-  );
-});
-
 // UPDATE SINGLE REVIEW
 
 reviewController.updateSingleReview = catchAsync(async (req, res, next) => {
   const currentUserId = req.userId;
   const reviewId = req.params.id;
   const { content } = req.body;
+
+  // find and update
 
   const review = await Review.findOneAndUpdate(
     {
@@ -161,9 +136,15 @@ reviewController.updateSingleReview = catchAsync(async (req, res, next) => {
     { content },
     { new: true }
   );
+  
+  // check exist review
+
   if (!review) {
     throw new AppError(400, "Review not exists", "Update review error");
   }
+
+  // response
+
   return sendResponse(
     res,
     200,
@@ -179,14 +160,23 @@ reviewController.updateSingleReview = catchAsync(async (req, res, next) => {
 reviewController.deleteSingleReview = catchAsync(async (req, res, next) => {
   const currentUserId = req.userId;
   const reviewId = req.params.id;
+
+  // find and delete
+
   const review = await Review.findOneAndDelete({
     _id: reviewId,
     userId: currentUserId,
   });
+
+  // check exist review
+
   if (!review) {
     throw new AppError(400, "Review not exists", "Delete review error");
   }
   await calculateReviewCount(review.productId);
+  
+  // response
+
   return sendResponse(
     res,
     200,
@@ -207,15 +197,21 @@ reviewController.getAllReviews = catchAsync(async (req, res, next) => {
     throw new AppError(400, "Not Accepted Query", "Bad Request");
   }
 
+  // find review
+  
   let review = await Review.find({ isDeleted: false })
     .sort({ createAt: -1 })
     .populate("productId")
     .populate("userId");
 
+  // count & page & totalPages
+
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 3;
   const count = review.length;
   const totalPages = Math.ceil(count / limit);
+
+  // response
 
   return sendResponse(
     res,

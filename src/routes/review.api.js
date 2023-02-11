@@ -64,7 +64,6 @@ router.delete(
 
 router.get(
   "/public/:id",
-  //   validate(reviewVal.getAllReviewsPublic, ["body"]),
   reviewController.getReviewByProductId
 );
 
@@ -75,9 +74,6 @@ router.get(
  */
 
 router.get("/public",
-// validators.validate([
-//         param("id").exists().isString().custom(validators.checkObjectId)
-//     ]),
  reviewController.getAllReviews
  );
 

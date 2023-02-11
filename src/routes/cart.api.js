@@ -24,23 +24,6 @@ router.get("/me",
     authentication.loginRequired,
     cartController.getCart);
 
-
-/**
- * @route GET /cars/me/:id
- * @description Get a Oders by id
- * @access Login required
- */
-
-// router.get(
-//     "/me/:id",
-//     authentication.loginRequired,
-//     validators.validate([
-//         param("id").exists().isString().custom(validators.checkObjectId)
-//     ]),
-//     cartController.getSingleOrder
-   
-// );
-
 /**
  * @route PUT /carts/me/:id
  * @description Update a cart
@@ -61,6 +44,7 @@ router.put(
  * @description Delete a cart
  * @access Login required
  */
+
 router.delete(
   "/me/:id",
   authentication.loginRequired,
