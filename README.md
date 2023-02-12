@@ -263,9 +263,25 @@
 
 ## SET UP
 
-1. Environment variable config (JSK, MURI) In .env in .gitignore
-   > > JWT_SECRET_KEY=someKey
-   > > MONGO_DEV_URI=mongodb://locahost:27017/
-   > > MONGO_PRO_URI=mongodb_srv://atlas.com/
+1. Generate express boiler plate
 
-Run _npm run dev_ or _yarn dev_ to start backend
+   > npx express-generator --no-view
+   > npm install
+   > touch .gitignore .env
+
+2. Install project dependencies
+
+   > npm install
+
+3. Environment variable config (JSK, MURI) In **.env** in **.gitignore**
+
+   > JWT_SECRET_KEY=someKey
+   > MONGO_DEV_URI=mongodb://locahost:27017/
+   > MONGO_PRO_URI=mongodb_srv://atlas.com/
+
+   In **.gitignore**
+
+   > node_modules
+   > .env
+
+Run **npm run dev** or **yarn dev** to start backend
