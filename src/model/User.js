@@ -73,6 +73,7 @@ const userSchema = Schema(
       type: Boolean,
       default: false,
       select: false,
+      required:true
       
     },
     isEmailVerified: {

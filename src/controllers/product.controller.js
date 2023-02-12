@@ -347,11 +347,14 @@ productController.updateSingleProduct = catchAsync(async (req, res, next) => {
 
 productController.deleteSingleProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
+  // const {user} = req.user;
 
-  let product = await Product.findOneAndUpdate(
+  let product = await Product.findByIdAndUpdate(
     { _id: productId },
     { isDeleted: true }
   );
+  
+
 
   // check exist product
 
