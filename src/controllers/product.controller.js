@@ -78,23 +78,18 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
   if (req.query.sortBy?.includes("Normal")) {
     req.query.status = "Normal";
   }
-  if (req.query.rating) {
-    req.query.ratingAverage = {
-      $gte: parseInt(req.query.rating),
-      $lte: 5,
-    };
-  }
 
   // count & page & totalPages
+  const count = await Product.countDocuments(req.query);
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 10;
-  const offset = limit * (page - 1);
-  const count = await Product.countDocuments(req.query);
   const totalPages = Math.ceil(count / limit);
+  const offset = limit * (page - 1);
+
 
   // find 
 
-  const products = await Product.find(req.query)
+  const products = await Product.find({isDeleted: false} )
     .sort({ createdAt: -1 })
     .limit(limit)
     .skip(offset);
@@ -349,10 +344,7 @@ productController.deleteSingleProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
   // const {user} = req.user;
 
-  let product = await Product.findByIdAndUpdate(
-    { _id: productId },
-    { isDeleted: true }
-  );
+  let product = await Product.findByIdAndUpdate( productId ,{ isDeleted: true },{new:true} );
   
 
 
