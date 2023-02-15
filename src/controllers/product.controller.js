@@ -89,7 +89,7 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
 
   // find 
 
-  const products = await Product.find({isDeleted: false} )
+  const products = await Product.find(req.qurey,{isDeleted: false} )
     .sort({ createdAt: -1 })
     .limit(limit)
     .skip(offset);
