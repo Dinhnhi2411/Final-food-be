@@ -154,7 +154,7 @@ productController.getAllProducts = catchAsync(async(req, res, next)=> {
         .limit(limit)
         .skip(offset)
 
-    return sendResponse(res, 200, true, { products, totalPages, count, page }, null, "Get Currenr Product successful")
+    return sendResponse(res, 200, true, { products, totalPages, count}, null, "Get Currenr Product successful")
 
 });
 
