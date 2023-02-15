@@ -56,8 +56,13 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 productController.getAllProducts = catchAsync(async (req, res, next) => {
   let { limit, page, sortBy, populate, select, ...filter } = req.query;
 
+  
+  if (user?.role !== "seller") {
+    query.isDeleted = false;
+  }
   // setup search by name 
 
+  
   if (req.query.productName) {
     req.query.productName = { $regex: req.query.productName, $options: "i" };
   } else {
@@ -89,7 +94,7 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
 
   // find 
 
-  const products = await Product.find( req.query, {isDeleted:false} )
+  const products = await Product.find( req.query )
     .sort({ createdAt: -1 })
     .limit(limit)
     .skip(offset);
