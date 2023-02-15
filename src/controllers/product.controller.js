@@ -4,7 +4,6 @@ const Review = require("../model/Review");
 
 const productController = {};
 
-
 // CREATE NEW PRODUCT
 
 productController.createNewProduct = catchAsync(async (req, res, next) => {
@@ -22,7 +21,7 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
     status,
   } = req.body;
   let product = await Product.findOne({ productName });
-  
+
   // check exist product
 
   if (product) {
@@ -39,14 +38,14 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
     priceSale,
     unit,
     image,
-   rating,
+    rating,
     status,
     author: currentSellerId,
   });
 
   product = await product.populate("author");
 
-  // response 
+  // response
 
   sendResponse(res, 200, true, product, null, "Create Product Successfully");
 });
@@ -56,7 +55,7 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 // productController.getAllProducts = catchAsync(async (req, res, next) => {
 //   let { limit, page, sortBy, populate, select, ...filter } = req.query;
 
-//   // setup search by name 
+//   // setup search by name
 
 //   if (req.query.productName) {
 //     req.query.productName = { $regex: req.query.productName, $options: "i" };
@@ -86,8 +85,7 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 //   const totalPages = Math.ceil(count / limit);
 //   const offset = limit * (page - 1);
 
-
-//   // find 
+//   // find
 
 //   const products = await Product.find( req.query )
 //     .sort({ createdAt: -1 })
@@ -105,57 +103,71 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 //   );
 // });
 
-productController.getAllProducts = catchAsync(async(req, res, next)=> {
+productController.getAllProducts = catchAsync(async (req, res, next) => {
+  let {
+    page,
+    limit,
+    name,
+    types,
+    filter,
+    price_max,
+    price_min,
+    ...filterQuery
+  } = req.query;
 
-   let { page, limit, name, types, filter, price_max, price_min,  ...filterQuery } = req.query
+  const filterKeys = Object.keys(filterQuery);
+  if (filterKeys.length)
+    throw new AppError(400, "Not accepted query", "Bad Request");
 
-    const filterKeys = Object.keys(filterQuery);
-    if (filterKeys.length)
-        throw new AppError(400, "Not accepted query", "Bad Request");
+  const filterConditions = [{ isDeleted: false }];
+  if (name) {
+    filterConditions.push({
+      productName: { $regex: name, $options: "i" },
+    });
+  }
+  if (types) {
+    filterConditions.push({
+      types: { $regex: types, $options: "i" },
+    });
+  }
+  if (filter) {
+    filterConditions.push({
+      status: { $regex: filter, $options: "i" },
+    });
+  }
 
-    const filterConditions = [{ isDeleted: false }]
-    if (name) {
-        filterConditions.push({
-            productName: { $regex: name, $options: "i" },
-        })
-    }
-        if (types) {
-        filterConditions.push({
-            types: { $regex: types, $options: "i" },
-        })
-    }
-            if (filter) {
-        filterConditions.push({
-            status: { $regex: filter, $options: "i" },
-        })
-    }
+  if (price_max & price_min) {
+    filterConditions.push({
+      price: {
+        $lte: parseInt(price_max) || 15,
+        $gte: parseInt(price_min) || 0,
+      },
+    });
+  }
+  const filterCritera = filterConditions.length
+    ? { $and: filterConditions }
+    : {};
 
-                if (price_max & price_min) {
-        filterConditions.push({
-           price: {
-              $lte: parseInt(price_max) || 15,
-      $gte: parseInt(price_min) || 0,
-           }
-        })
-    }
-    const filterCritera = filterConditions.length
-        ? { $and: filterConditions }
-        : {};
+  const count = await Product.countDocuments(filterCritera);
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 10;
+  const totalPages = Math.ceil(count / limit);
+  const offset = limit * (page - 1);
 
-    const count = await Product.countDocuments(filterCritera)
-    page = parseInt(page) || 1;
-    limit = parseInt(limit) || 10;
-    const totalPages = Math.ceil(count / limit);
-    const offset = limit * (page - 1)
+  let products = await Product.find(filterCritera)
+    .sort({ createdAt: -1 })
+    // .populate("author")
+    .limit(limit)
+    .skip(offset);
 
-    let products = await Product.find(filterCritera)
-        .sort({ createdAt: -1 })
-        .populate("author")
-        .limit(limit)
-        .skip(offset)
-
-    return sendResponse(res, 200, true, { products, totalPages, count}, null, "Get Currenr Product successful")
-
+  return sendResponse(
+    res,
+    200,
+    true,
+    { products, totalPages, count, page },
+    null,
+    "Get Currenr Product successful"
+  );
 });
 
 //  GET PRODUCT TOP SELLING
@@ -285,7 +297,7 @@ productController.getProductDiscount = catchAsync(async (req, res, next) => {
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
-// find product
+  // find product
 
   let Products = await Product.find(filterCritera)
     .sort({ createdAt: -1 })
@@ -293,7 +305,7 @@ productController.getProductDiscount = catchAsync(async (req, res, next) => {
     .limit(limit)
     .skip(offset);
 
-  // response 
+  // response
 
   return sendResponse(
     res,
@@ -319,7 +331,7 @@ productController.getSingleProduct = catchAsync(async (req, res, next) => {
 
   product = product.toJSON();
 
-  // find review 
+  // find review
 
   product.review = await Review.find({ product: product._id });
 
@@ -342,7 +354,7 @@ productController.updateSingleProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
 
   let product = await Product.findById(productId);
-  
+
   // check exist product
 
   if (!product) {
@@ -397,9 +409,11 @@ productController.deleteSingleProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
   // const {user} = req.user;
 
-  let product = await Product.findByIdAndUpdate( productId ,{ isDeleted: true },{new:true} );
-  
-
+  let product = await Product.findByIdAndUpdate(
+    productId,
+    { isDeleted: true },
+    { new: true }
+  );
 
   // check exist product
 
@@ -408,7 +422,7 @@ productController.deleteSingleProduct = catchAsync(async (req, res, next) => {
   }
 
   // response
-  
+
   return sendResponse(
     res,
     200,
