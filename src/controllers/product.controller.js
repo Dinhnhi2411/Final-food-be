@@ -53,6 +53,8 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 // GET ALL PRODUCTS
 
 productController.getAllProducts = catchAsync(async (req, res, next) => {
+ 
+
   let { limit, page, sortBy, populate, select, ...filter } = req.query;
 
   // setup search by name
@@ -106,13 +108,12 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
   const offset = limit * (page - 1);
 
   // find
-  let products = await Product.find({isDeleted:false})
+  let products = await Product.find(req.query)
+  
+   products = await Product.find({isDeleted:false})
     .sort({ createdAt: -1 })
     .limit(limit)
     .skip(offset);
-
-     products = await Product.find(req.query)
-
 
   // response
   return sendResponse(
