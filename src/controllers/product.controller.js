@@ -52,137 +52,148 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 
 // GET ALL PRODUCTS
 
-productController.getAllProducts = catchAsync(async (req, res, next) => {
+// productController.getAllProducts = catchAsync(async (req, res, next) => {
  
 
-  let { limit, page, sortBy, populate, select, ...filter } = req.query;
+//   let { limit, page, sortBy, populate, select, ...filter } = req.query;
 
-  // setup search by name
 
-  if (req.query.productName) {
-    req.query.productName = { $regex: req.query.productName, $options: "i" };
-  } else {
-    delete req.query.productName;
-  }
+//   // setup search by name
 
-  // let sortBy = req.query.sortBy && req.query.sortBy.toLowerCase();
-
-  if (req.query.sortBy === "New") {
-    req.query.status = "New";
-  }
-  if (req.query.sortBy?.includes("Discount")) {
-    req.query.status = "Discount";
-  }
-  if (req.query.sortBy?.includes("Top")) {
-    req.query.status = "Top";
-  }
-  if (req.query.sortBy?.includes("Normal")) {
-    req.query.status = "Normal";
-  }
-
-  //  setup filter by types
-
-    if (req.query.sortBy === "Fruit") {
-    req.query.types = "Fruit";
-  }
-      if (req.query.sortBy === "Vegetable") {
-    req.query.types = "Vegetable";
-  }
-
-   //  setup filter by price
-
-  if (req.query.price_max && req.query.price_min) {
-    req.query.price = {
-      $lte: parseInt(req.query.price_max) || 1000000000,
-      $gte: parseInt(req.query.price_min) || 0,
-    };
-    delete req.query.price_max;
-    delete req.query.price_min;
-  }
-
-  // count & page & totalPages
-  const count = await Product.countDocuments(req.query);
-  page = parseInt(page) || 1;
-  limit = parseInt(limit) || 10;
-  const totalPages = Math.ceil(count / limit);
-  const offset = limit * (page - 1);
-
-  // find
-  let products = await Product.find(req.query)
-  
-   products = await Product.find({isDeleted:false})
-    .sort({ createdAt: -1 })
-    .limit(limit)
-    .skip(offset);
-
-  // response
-  return sendResponse(
-    res,
-    200,
-    true,
-    { products, totalPages, count, page },
-    null,
-    "Get Current Product Successfully"
-  );
-});
-
-// productController.getAllProducts = catchAsync(async (req, res, next) => {
-//   let {
-//     page,
-//     limit,
-//     name,
-//     types,
-//     filter,
-//     ...filterQuery
-//   } = req.query;
-
-//   const filterKeys = Object.keys(filterQuery);
-//   if (filterKeys.length)
-//     throw new AppError(400, "Not accepted query", "Bad Request");
-
-//   const filterConditions = [{ isDeleted: false }];
-//   if (name) {
-//     filterConditions.push({
-//       productName: { $regex: name, $options: "i" },
-//     });
+//   if (req.query.productName) {
+//     req.query.productName = { $regex: req.query.productName, $options: "i" };
+//   } else {
+//     delete req.query.productName;
 //   }
-//   if (types) {
-//     filterConditions.push({
-//       types: { $regex: types, $options: "i" },
-//     });
+
+//   //  set up filter by status product
+
+//   if (req.query.sortBy === "New") {
+//   req.query.status = "New";
 //   }
-//   if (filter) {
-//     filterConditions.push({
-//       status: { $regex: filter, $options: "i" },
-//     });
+//   if (req.query.sortBy?.includes("Discount")) {
+//     req.query.status = "Discount";
+//   }
+//   if (req.query.sortBy?.includes("Top")) {
+//     req.query.status = "Top";
+//   }
+
+//   //  setup filter by types
+
+//     if (req.query.sortBy === "Fruit") {
+//     req.query.types = "Fruit";
+//   }
+//       if (req.query.sortBy === "Vegetable") {
+//     req.query.types = "Vegetable";
+//   }
+
+//    //  setup filter by price
+
+//   if (req.query.price_max && req.query.price_min) {
+//     req.query.price = {
+//       $lte: parseInt(req.query.price_max) || 1000000000,
+//       $gte: parseInt(req.query.price_min) || 0,
+//     };
+//     delete req.query.price_max;
+//     delete req.query.price_min;
 //   }
 
 
-//   const filterCritera = filterConditions.length
-//     ? { $and: filterConditions }
-//     : {};
-
-//   const count = await Product.countDocuments(filterCritera);
+//   // count & page & totalPages
+//   const count = await Product.countDocuments(req.query);
 //   page = parseInt(page) || 1;
 //   limit = parseInt(limit) || 10;
 //   const totalPages = Math.ceil(count / limit);
 //   const offset = limit * (page - 1);
 
-//   let products = await Product.find(filterCritera)
-//     .sort({ createdAt: -1 })
-//     .populate("author")
+//   // find product theo điều kiện
+
+//    let products = await Product.find(req.query, {isDeleted:false})
+//     .sort({ createdAt: -1})
 //     .limit(limit)
 //     .skip(offset);
+  
 
+//   // response
 //   return sendResponse(
 //     res,
 //     200,
 //     true,
 //     { products, totalPages, count, page },
 //     null,
-//     "Get Currenr Product successful"
+//     "Get Current Product Successfully"
 //   );
 // });
+
+productController.getAllProducts = catchAsync(async (req, res, next) => {
+  let {
+    page,
+    limit,
+    name,
+    types,
+    filter,
+    price_max,
+    price_min,
+    ...filterQuery
+  } = req.query;
+
+  const filterKeys = Object.keys(filterQuery);
+  if (filterKeys.length)
+    throw new AppError(400, "Not accepted query", "Bad Request");
+
+  const filterConditions = [{ isDeleted: false }];
+  if (name) {
+    filterConditions.push({
+      productName: { $regex: name, $options: "i" },
+    });
+  }
+  if (types) {
+    filterConditions.push({
+      types: { $regex: types, $options: "i" },
+    });
+  }
+  if (filter) {
+    filterConditions.push({
+      status: { $regex: filter, $options: "i" },
+    });
+  }
+  
+  
+  if (price_max && price_min) {
+   filterConditions.push({
+      price: {
+      $lte: parseInt(price_max) || 15,
+      $gte: parseInt(price_min) || 0,
+      }
+    });
+
+  }
+
+  const filterCritera = filterConditions.length
+    ? { $and: filterConditions }
+    : {};
+
+  const count = await Product.countDocuments(filterCritera);
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 10;
+  const totalPages = Math.ceil(count / limit);
+  const offset = limit * (page - 1);
+
+  let products = await Product.find(filterCritera)
+    .sort({ createdAt: -1 })
+    .populate("author")
+    .limit(limit)
+    .skip(offset);
+
+  return sendResponse(
+    res,
+    200,
+    true,
+    { products, totalPages, count, page },
+    null,
+    "Get Currenr Product successful"
+  );
+});
 
 //  GET PRODUCT TOP SELLING
 
