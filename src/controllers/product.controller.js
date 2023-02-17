@@ -52,78 +52,78 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 
 // GET ALL PRODUCTS
 
-// productController.getAllProducts = catchAsync(async (req, res, next) => {
+productController.getAllProducts = catchAsync(async (req, res, next) => {
  
 
-//   let { limit, page, sortBy, populate, select, ...filter } = req.query;
+  let { limit, page, sortBy, populate, select, ...filter } = req.query;
 
 
-//   // setup search by name
+  // setup search by name
 
-//   if (req.query.productName) {
-//     req.query.productName = { $regex: req.query.productName, $options: "i" };
-//   } else {
-//     delete req.query.productName;
-//   }
+  if (req.query.productName) {
+    req.query.productName = { $regex: req.query.productName, $options: "i" };
+  } else {
+    delete req.query.productName;
+  }
 
-//   //  set up filter by status product
+  //  set up filter by status product
 
-//   if (req.query.sortBy === "New") {
-//   req.query.status = "New";
-//   }
-//   if (req.query.sortBy?.includes("Discount")) {
-//     req.query.status = "Discount";
-//   }
-//   if (req.query.sortBy?.includes("Top")) {
-//     req.query.status = "Top";
-//   }
+  if (req.query.sortBy === "New") {
+  req.query.status = "New";
+  }
+  if (req.query.sortBy?.includes("Discount")) {
+    req.query.status = "Discount";
+  }
+  if (req.query.sortBy?.includes("Top")) {
+    req.query.status = "Top";
+  }
 
-//   //  setup filter by types
+  //  setup filter by types
 
-//     if (req.query.sortBy === "Fruit") {
-//     req.query.types = "Fruit";
-//   }
-//       if (req.query.sortBy === "Vegetable") {
-//     req.query.types = "Vegetable";
-//   }
+    if (req.query.sortBy === "Fruit") {
+    req.query.types = "Fruit";
+  }
+      if (req.query.sortBy === "Vegetable") {
+    req.query.types = "Vegetable";
+  }
 
-//    //  setup filter by price
+   //  setup filter by price
 
-//   if (req.query.price_max && req.query.price_min) {
-//     req.query.price = {
-//       $lte: parseInt(req.query.price_max) || 1000000000,
-//       $gte: parseInt(req.query.price_min) || 0,
-//     };
-//     delete req.query.price_max;
-//     delete req.query.price_min;
-//   }
+  if (req.query.price_max && req.query.price_min) {
+    req.query.price = {
+      $lte: parseInt(req.query.price_max) || 1000000000,
+      $gte: parseInt(req.query.price_min) || 0,
+    };
+    delete req.query.price_max;
+    delete req.query.price_min;
+  }
 
 
-//   // count & page & totalPages
-//   const count = await Product.countDocuments(req.query);
-//   page = parseInt(page) || 1;
-//   limit = parseInt(limit) || 10;
-//   const totalPages = Math.ceil(count / limit);
-//   const offset = limit * (page - 1);
+  // count & page & totalPages
+  const count = await Product.countDocuments(req.query);
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 10;
+  const totalPages = Math.ceil(count / limit);
+  const offset = limit * (page - 1);
 
-//   // find product theo điều kiện
+  // find product theo điều kiện
 
-//    let products = await Product.find(req.query, {isDeleted:false})
-//     .sort({ createdAt: -1})
-//     .limit(limit)
-//     .skip(offset);
+   let products = await Product.find(req.query, {isDeleted:false})
+    .sort({ createdAt: -1})
+    .limit(limit)
+    .skip(offset);
   
 
-//   // response
-//   return sendResponse(
-//     res,
-//     200,
-//     true,
-//     { products, totalPages, count, page },
-//     null,
-//     "Get Current Product Successfully"
-//   );
-// });
+  // response
+  return sendResponse(
+    res,
+    200,
+    true,
+    { products, totalPages, count, page },
+    null,
+    "Get Current Product Successfully"
+  );
+});
 
 productController.getAllProducts = catchAsync(async (req, res, next) => {
   let {
@@ -131,7 +131,7 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
     limit,
     name,
     types,
-    filter,
+    status,
     price_max,
     price_min,
     ...filterQuery
@@ -152,12 +152,11 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
       types: { $regex: types, $options: "i" },
     });
   }
-  if (filter) {
+  if (status) {
     filterConditions.push({
-      status: { $regex: filter, $options: "i" },
+      status: { $regex: status, $options: "i" },
     });
   }
-  
   
   if (price_max && price_min) {
    filterConditions.push({
@@ -434,11 +433,9 @@ productController.deleteSingleProduct = catchAsync(async (req, res, next) => {
   const productId = req.params.id;
   // const {user} = req.user;
 
-  let product = await Product.findByIdAndUpdate(
-    productId,
-    { isDeleted: true },
-    { new: true }
-  );
+  let product = await Product.findByIdAndDelete(
+    productId)
+  
 
   // check exist product
 
