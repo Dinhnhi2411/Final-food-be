@@ -17,7 +17,7 @@ const config = {
   },
   jwt: {
     secret: env.JWT_SECRET_KEY,
-  }
+  },
 };
 
 module.exports = config;

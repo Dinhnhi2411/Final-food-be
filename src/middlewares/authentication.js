@@ -1,6 +1,9 @@
 const jwt = require("jsonwebtoken");
+const config = require("../config/config.js");
+const httpStatus = require("http-status");
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const { sendResponse, AppError } = require("../helpers/utils.js");
+const User = require("../model/User.js");
 
 const authentication = {};
 
@@ -20,6 +23,7 @@ authentication.loginRequired = (req, res, next) => {
         }
       }
       req.userId = payload._id;
+
     });
 
     next();
@@ -27,4 +31,25 @@ authentication.loginRequired = (req, res, next) => {
     next(err);
   }
 };
+
+authentication.isAdmin = async(req, res, next) => {  
+  try {
+    const userId = req.userId;
+ 
+    let user = await User.findById(userId)
+ 
+    let role = user.role
+    
+    if (role !== "seller") {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not a seller",
+        "Authorization error"
+      );
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
 module.exports = authentication;

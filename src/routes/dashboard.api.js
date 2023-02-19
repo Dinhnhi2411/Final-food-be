@@ -12,6 +12,7 @@ const router = express.Router();
 router.get(
   "/",
   authentication.loginRequired,
+  authentication.isAdmin,
   dashboardController.getAllDashBoard
 );
 

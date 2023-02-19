@@ -169,6 +169,9 @@ orderController.updateOrder = catchAsync(async (req, res, next) => {
   }
   
   const allows = ["status"];
+
+  const allowUpdate =["Preparing Order","Order is shipping", "Delivered", "Cancel"]
+  
   allows.forEach((field) => {
     if (req.body[field] !== undefined) {
       order[field] = req.body[field];
@@ -181,6 +184,8 @@ orderController.updateOrder = catchAsync(async (req, res, next) => {
 
   return sendResponse(res, 200, true, order, null, "Update Order Successfully");
 });
+
+
 
 // DELETE ORDER
 
