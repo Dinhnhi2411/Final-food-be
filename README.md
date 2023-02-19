@@ -54,8 +54,6 @@ Run **npm run dev** or **yarn dev** to start backend
 - @route PUT /users/customer/:id
 - @description Update customer profile
 
-  \*/
-
 #### Seller
 
 - @route GET /users
