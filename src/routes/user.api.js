@@ -20,7 +20,7 @@ router.post(
     .exists()
     .isEmail()
     .normalizeEmail({ gmail_remove_dots: false }),
-    body("password", "Invalid password").exists().notEmpty(),
+    body("password", "Invalid password, password must be at least 5 chars long").exists().notEmpty().isLength({ min: 5 }),
     ]),
     userController.registerUser
 );
