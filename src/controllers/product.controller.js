@@ -7,7 +7,7 @@ const productController = {};
 // CREATE NEW PRODUCT
 
 productController.createNewProduct = catchAsync(async (req, res, next) => {
-  const currentAdminId = req.userId;
+  const currentSellerId = req.userId;
 
   let {
     productName,
@@ -40,7 +40,7 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
     image,
     rating,
     status,
-    author: currentAdminId,
+    author: currentSellerId,
   });
 
   product = await product.populate("author");
@@ -374,7 +374,7 @@ productController.getSingleProduct = catchAsync(async (req, res, next) => {
 //  UPDATE SINGLE PRODUCT
 
 productController.updateSingleProduct = catchAsync(async (req, res, next) => {
-  const currentAdminId = req.userId;
+  const currentSellertId = req.userId;
   const productId = req.params.id;
 
   let product = await Product.findById(productId);
@@ -387,7 +387,7 @@ productController.updateSingleProduct = catchAsync(async (req, res, next) => {
 
   // check author
 
-  if (!product.author.equals(currentAdminId)) {
+  if (!product.author.equals(currentSellertId)) {
     throw new AppError(
       400,
       "Only Author Can Edit Product",
