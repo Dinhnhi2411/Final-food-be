@@ -67,7 +67,7 @@ validators.validate([
 userController.updateProfileUser
 );
 
-// SELLER
+// Admin
 
 /**
 @route GET /users

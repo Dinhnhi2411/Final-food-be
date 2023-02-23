@@ -56,7 +56,7 @@ router.get(
   productController.getSingleProduct
 );
 
-// SELLER
+// Admin
 
 /**
 - @route GET /products

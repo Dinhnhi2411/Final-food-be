@@ -58,7 +58,7 @@ router.get(
 );
 
 
-//  SELLER
+// Admin
 
 /**
  * @route GET /oders

@@ -54,7 +54,7 @@ Run **npm run dev** or **yarn dev** to start backend
 - @route PUT /users/customer/:id
 - @description Update customer profile
 
-#### Seller
+#### Admin
 
 - @route GET /users
 - @description Get all users
@@ -84,7 +84,7 @@ Run **npm run dev** or **yarn dev** to start backend
 - @route GET /products/:id
 - @description Get a product
 
-#### Seller
+#### Admin
 
 - @route GET /products?page=1&limit=10
 - @description Get all products with pagination
@@ -128,7 +128,7 @@ Run **npm run dev** or **yarn dev** to start backend
 - @route GET /oders/me/:id
 - @description Get oders by id
 
-#### Seller
+#### Admin
 
 - @route GET /oders
 - @description Get all oders
