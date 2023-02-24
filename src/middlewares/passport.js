@@ -7,10 +7,13 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const config = require("../config/config");
 const { AppError } = require("../helpers/utils");
+
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+
 const passportMiddleware = {};
 
 const jwtOptions = {
-  secretOrKey: config.jwt.secret,
+  secretOrKey: JWT_SECRET_KEY,
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 };
 
