@@ -55,7 +55,7 @@ productController.createNewProduct = catchAsync(async (req, res, next) => {
 productController.getAllProducts = catchAsync(async (req, res, next) => {
  
 
-  let { limit, page, sortBy, populate, select, ...filter } = req.query;
+  let { limit, page, sortBy, populate, select,  ...filter } = req.query;
 
 
   // setup search by name
@@ -89,14 +89,24 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
 
    //  setup filter by price
 
-  if (req.query.price_max && req.query.price_min) {
-    req.query.price = {
-      $lte: parseInt(req.query.price_max) || 1000000000,
-      $gte: parseInt(req.query.price_min) || 0,
-    };
-    delete req.query.price_max;
-    delete req.query.price_min;
-  }
+  // if (req.query.price_max && req.query.price_min) {
+  //   req.query.price = {
+  //     $lte: parseInt(req.query.price_max) || 20,
+  //     $gte: parseInt(req.query.price_min) || 0,
+  //   };
+  //   delete req.query.price_max;
+  //   delete req.query.price_min;
+  // }
+
+if(req.query.priceRange === "below" ){
+  req.query.price = {$lt:6}
+}
+if(req.query.priceRange === "above" ){
+  req.query.price = {$gt:10}
+}
+if(req.query.priceRange === "between" ){
+  req.query.price = {$in:[6,10]}
+}
 
 
   // count & page & totalPages
