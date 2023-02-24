@@ -2,6 +2,7 @@ const httpStatus = require("http-status");
 const passport = require("passport");
 const facebookStrategy = require("passport-facebook-token");
 const googleStrategy = require("passport-google-oauth-token");
+import { Strategy } from 'passport-local';
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const config = require("../config/config");
@@ -65,7 +66,7 @@ passportMiddleware.logginRequired = function (req, res, next) {
       try {
         if (err || info) {
           throw new AppError(
-            200,
+            400,
             "Invalid access token",
             "Get access token"
           );

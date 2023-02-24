@@ -26,6 +26,7 @@
     "passport-facebook": "^3.0.0",
     "passport-facebook-token": "^4.0.0",
     "passport-google-oauth-token": "^1.0.4",
-    "passport-jwt": "^4.0.1"
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0"
   }
 }
