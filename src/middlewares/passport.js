@@ -4,26 +4,26 @@ const facebookStrategy = require("passport-facebook-token");
 const googleStrategy = require("passport-google-oauth-token");
 const config = require("../config/config");
 
-// const JwtStrategy = require("passport-jwt").Strategy;
-// const ExtractJwt = require("passport-jwt").ExtractJwt;
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
 const { AppError } = require("../helpers/utils");
 
 const passportMiddleware = {};
 
-// const jwtOptions = {
-//   secretOrKey: config.jwt.secret,
-//   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-// };
+const jwtOptions = {
+  secretOrKey: config.jwt.secret,
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+};
 
-// const jwtVerify = async (payload, done) => {
-//   try {
-//     done(null, payload);
-//   } catch (error) {
-//     done(error, false);
-//   }
-// };
+const jwtVerify = async (payload, done) => {
+  try {
+    done(null, payload);
+  } catch (error) {
+    done(error, false);
+  }
+};
 
-// const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify);
+const jwtStrategy = new JwtStrategy(jwtOptions, jwtVerify);
 
 // login with facebook
 
