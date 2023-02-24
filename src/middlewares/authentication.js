@@ -40,10 +40,10 @@ authentication.isAdmin = async(req, res, next) => {
  
     let role = user.role
     
-    if (role !== "seller") {
+    if (role !== "admin") {
       throw new AppError(
         httpStatus.FORBIDDEN,
-        "You are not a seller",
+        "You are not a admin",
         "Authorization error"
       );
     }
