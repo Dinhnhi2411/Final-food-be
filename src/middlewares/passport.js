@@ -51,7 +51,7 @@ const googleLogin = new googleStrategy(
   }
 );
 
-// passport.use("jwt", jwtStrategy);
+passport.use("jwt", jwtStrategy);
 passport.use(facebookLogin);
 passport.use(googleLogin);
 
