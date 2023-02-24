@@ -2,7 +2,7 @@ const httpStatus = require("http-status");
 const passport = require("passport");
 const facebookStrategy = require("passport-facebook-token");
 const googleStrategy = require("passport-google-oauth-token");
-import { Strategy } from 'passport-local';
+
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const config = require("../config/config");
