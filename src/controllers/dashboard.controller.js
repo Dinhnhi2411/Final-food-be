@@ -13,6 +13,11 @@ const getDashBoard = async function (queryDash) {
     .reverse();
 
   const startDays = rangeDays[0];
+  console.log(startDays)
+  const endDays = new Date(
+    rangeDays[rangeDays.length - 1].setUTCHours(23, 59, 59, 999)
+  );
+
   const day = new Date();
   let month = day.getMonth();
   let year = day.getFullYear();
@@ -34,6 +39,7 @@ const getDashBoard = async function (queryDash) {
       $match: {
         createdAt: {
           $gte: startDays,
+          $lte: endDays,
         },
         
       },
