@@ -36,6 +36,7 @@ const userSchema = Schema(
     {
       type: Number,
       required: false,
+      default: "",
     },
     address:
      {
