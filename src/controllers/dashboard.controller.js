@@ -13,7 +13,7 @@ const getDashBoard = async function (queryDash) {
     .reverse();
 
   const startDays = rangeDays[0];
-  console.log(startDays)
+  // console.log(startDays)
   const endDays = new Date(
     rangeDays[rangeDays.length - 1].setUTCHours(23, 59, 59, 999)
   );
