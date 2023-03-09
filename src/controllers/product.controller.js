@@ -89,13 +89,13 @@ productController.getAllProducts = catchAsync(async (req, res, next) => {
 
    //  setup filter by price
 
-if(req.query.sortBy === "Below $6" ){
+if(req.query.sortBy === "Below" ){
   req.query.price = {$lt:6}
 }
-if(req.query.sortBy === "Above $10" ){
+if(req.query.sortBy === "Above" ){
   req.query.price = {$gt:10}
 }
-if(req.query.sortBy === "Between $6 - $10" ){
+if(req.query.sortBy === "Between" ){
   req.query.price = {$in:[6,10]}
 }
 
