@@ -149,7 +149,7 @@ userController.updateProfileUser = catchAsync(async(req, res, next) => {
         "phone",
         "city",
         "country",
-        "storeName"
+        "company"
         
   ];
 
