@@ -1,5 +1,6 @@
 
 const mongoose = require("mongoose");
+
 const Schema = mongoose.Schema;
 
 const cartSchema = Schema(
@@ -18,7 +19,8 @@ const cartSchema = Schema(
             type: Number,
             required: true,
         },
-         isDeleted: { 
+     
+        isDeleted: { 
             type: Boolean,
             default: false, 
             select: false, 
