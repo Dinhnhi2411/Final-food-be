@@ -168,9 +168,8 @@ orderController.updateOrder = catchAsync(async (req, res, next) => {
     throw new AppError(400, "Order Not Exists", "Update Order Error");
   }
   
-  const allows = ["status"];
+  const allows = ["status", "shipping", "payment"];
 
-  const allowUpdate =["Preparing Order","Order is shipping", "Delivered", "Cancel"]
   
   allows.forEach((field) => {
     if (req.body[field] !== undefined) {
