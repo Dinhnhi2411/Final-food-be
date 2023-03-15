@@ -1,21 +1,10 @@
 const mongoose = require("mongoose");
+
 const Schema = mongoose.Schema;
 
 const orderSchema = Schema(
     {
-    name: {
-        type: String, 
-        required: true,
-    },
-    addressShip: {
-        type: String, 
-        required: true,
-    },
-    phone: 
-    {
-        type: Number,
-        required: true,
-    },
+
     products: [{
         product: {
             type: Schema.Types.ObjectId,
