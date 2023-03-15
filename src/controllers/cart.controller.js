@@ -92,7 +92,7 @@ cartController.updateSingleCart = catchAsync(async (req, res, next) => {
     throw new AppError(400, "Only author can update cart", "Update Cart Error");
   }
   
-  const allows = ["amount"];
+  const allows = ["amount", "shipping", "payment"];
   allows.forEach((field) => {
     if (req.body[field] !== undefined) {
       cart[field] = req.body[field];
