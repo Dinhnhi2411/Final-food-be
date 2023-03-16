@@ -122,8 +122,8 @@ orderController.getOrders = catchAsync(async (req, res, next) => {
     res,
     200,
     true,
-    null,
     { orders, totalPages, count, page },
+     null,
     "Get Current Order Successfully"
   );
 });
