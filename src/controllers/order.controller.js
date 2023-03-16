@@ -100,7 +100,7 @@ orderController.getOrders = catchAsync(async (req, res, next) => {
 
   const count = await Order.countDocuments({userId});
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 5;
+  limit = parseInt(limit) || 8;
   const totalPages = Math.ceil(count / limit);
   const offset = limit * (page - 1);
 
